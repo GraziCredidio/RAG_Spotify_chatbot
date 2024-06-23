@@ -6,7 +6,7 @@ def prepare_reviews_data(data_path: pathlib.Path):
     
     #Define schema
     dtypes = {
-        "Time_submitted": pl.Datetime,
+        "Time_submitted": pl.Utf8,
         "Review": pl.Utf8,
         "Rating": pl.Float64,
         "Total_thumbsup": pl.Float64,
@@ -18,18 +18,9 @@ def prepare_reviews_data(data_path: pathlib.Path):
     
     # Extract time submitted as date and time new columns
     app_review_db_data = (
-        app_reviews.with_columns(
-            [
-                (
-                    pl.col("Time_submitted").str.split(
-                        by = " ").list.get(0).cast(pl.Date)
-                ).alias("Review_date"),
-                (pl.col("Time_submitted").str.split(by = " ").list.get(1)).alias(
-                    "Review_time").cast(pl.Time),
-            ]   
-        )
-        .select(["Review", "Rating", "Total_thumbsup", "Review_date", "Review_time", "Reply"])
-        .sort(["Review_date", "Rating"])
+        app_reviews.with_columns()
+        .select(["Time_submitted","Review", "Rating", "Total_thumbsup", "Reply"])
+        .sort(["Time_submitted", "Rating"])
         .collect()    
     )
     
@@ -38,4 +29,4 @@ def prepare_reviews_data(data_path: pathlib.Path):
     documents = app_review_db_data["Review"].to_list()
     metadatas = app_review_db_data.drop("Review").to_dicts()
     
-    return{"ids": ids, "documents": documents, "metadatas": metadatas}
+    return {"ids": ids, "documents": documents, "metadatas": metadatas}
