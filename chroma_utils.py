@@ -17,7 +17,7 @@ def build_chroma_collection(
     # Instantiate chromadb client
     chroma_client = chromadb.PersistentClient(chroma_path)
     
-    embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(model = embedding_func_name)
+    embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(model_name = embedding_func_name)
     
     collection = chroma_client.create_collection(
         name = collection_name,

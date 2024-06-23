@@ -4,7 +4,7 @@ import polars as pl
 def prepare_reviews_data(data_path: pathlib.Path):
     """" Prepare the Spotify app reviews dataset for ChromaDB"""
     
-    #Define schema
+    # Define schema
     dtypes = {
         "Time_submitted": pl.Utf8,
         "Review": pl.Utf8,
@@ -18,7 +18,9 @@ def prepare_reviews_data(data_path: pathlib.Path):
     
     # Extract time submitted as date and time new columns
     app_review_db_data = (
-        app_reviews.with_columns()
+        app_reviews.with_columns(
+            pl.col("Reply").fill_null("No reply").cast(pl.Utf8)
+        )
         .select(["Time_submitted","Review", "Rating", "Total_thumbsup", "Reply"])
         .sort(["Time_submitted", "Rating"])
         .collect()    
