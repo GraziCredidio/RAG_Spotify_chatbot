@@ -40,20 +40,13 @@ on the Spotify user reviews posted on Google Play Store from January to Septembe
 """)
 
 # User inputs
-sample_context = """ 
-You are a customer success employee at a large
-audio streaming and media service provider company. 
-Use the following app reviews to answer questions: {}
- """
-sample_question = """ 
-What's the key to great customer satisfaction
-based on detailed positive reviews?
-"""
+sample_context = "You are a customer success employee at a large audio streaming and media service provider company. Use the following app reviews to answer questions"
+sample_question = "What's the key to great customer satisfaction based on detailed positive reviews?"
 
 user_context = st.text_area("Enter the context for the analysis", sample_context)
 user_question = st.text_area("Enter your question", sample_question)
-rating_range1 = st.number_input("Filter reviews with ratings above", 1, 4)
-rating_range2 = st.number_input("Filter reviews with ratings below", 2, 5)
+rating_range1 = st.number_input("Filter reviews with ratings above", 1, 5)
+rating_range2 = st.number_input("Filter reviews with ratings below", 1, 5)
 
 # Button to trigger analysis
 if st.button("Analyze reviews"):
@@ -62,25 +55,31 @@ if st.button("Analyze reviews"):
             query_texts=[user_question],
             n_results=10,
             include=["documents"],
-            where={"$and": [{rating_range1: {"$gte": 0}}, {rating_range2:{"$lte": 3}}]}
+            where={"$and": [{ "Rating": {"$gte": rating_range1}}, {"Rating":{"$lte": rating_range2}}]}
         )
-        
-        if reviews["documents"]: 
-            reviews_str = ",".join(reviews["documents"][0])
+        if (rating_range2 >= rating_range1): # prevent range2 to be lower than range1
             
-            review_summaries = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": user_context.format(reviews_str)}, # providing reviews as context
-                    {"role": "user", "content": user_question},
-                    ],
-                temperature=0,
-                n=1,
-                )
-            summary = review_summaries["choices"][0]["message"]["content"]
-            
-            st.subheader("Answer:")
-            st.write(summary)
+            if reviews["documents"]: 
+                reviews_str = ",".join(reviews["documents"][0])
+                
+                review_summaries = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": user_context.format(reviews_str)}, # providing reviews as context
+                        {"role": "user", "content": user_question},
+                        ],
+                    temperature=0,
+                    n=1,
+                    )
+                summary = review_summaries["choices"][0]["message"]["content"]
+                
+                st.subheader("Answer:")
+                st.write(summary)
+            else:
+                st.write("No reviews found with the specified criteria.")
+                
         else:
-            st.write("No reviews found with the specified criteria.")
+            st.write("""Rating filter is not correct. Please try again. 
+                    The first range must be lower than the second range. 
+                    If you do not wish to filter reviews by rating, leave the filters as: above 1 and below 5.""")
         
