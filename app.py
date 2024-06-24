@@ -43,10 +43,10 @@ on the Spotify user reviews posted on Google Play Store from January to Septembe
 sample_context = "You are a customer success employee at a large audio streaming and media service provider company. Use the following app reviews to answer questions"
 sample_question = "What's the key to great customer satisfaction based on detailed positive reviews?"
 
-user_context = st.text_area("Enter the context for the analysis", sample_context)
-user_question = st.text_area("Enter your question", sample_question)
-rating_range1 = st.number_input("Filter reviews with ratings above", 1, 5)
-rating_range2 = st.number_input("Filter reviews with ratings below", 1, 5)
+user_context = st.text_area("Enter the context for the analysis", placeholder=sample_context)
+user_question = st.text_area("Enter your question", placeholder=sample_question)
+rating_lower_range = st.number_input("Filter reviews with ratings above", 1, 5)
+rating_higher_range = st.number_input("Filter reviews with ratings below", 1, 5, 5)
 
 # Button to trigger analysis
 if st.button("Analyze reviews"):
@@ -55,9 +55,9 @@ if st.button("Analyze reviews"):
             query_texts=[user_question],
             n_results=10,
             include=["documents"],
-            where={"$and": [{ "Rating": {"$gte": rating_range1}}, {"Rating":{"$lte": rating_range2}}]}
+            where={"$and": [{ "Rating": {"$gte": rating_lower_range}}, {"Rating":{"$lte": rating_higher_range}}]}
         )
-        if (rating_range2 >= rating_range1): # prevent range2 to be lower than range1
+        if (rating_higher_range >= rating_lower_range): # prevent range2 to be lower than range1
             
             if reviews["documents"]: 
                 reviews_str = ",".join(reviews["documents"][0])
