@@ -3,6 +3,8 @@ import json
 import openai
 import chromadb
 from chromadb.utils import embedding_functions
+
+# Set upt environment variable (suppress a warning related to huggingface tokenizers)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # Config variables
@@ -11,12 +13,13 @@ CHROMA_PATH = "review_embeddings"
 EMBEDDING_FUNC_NAME = "multi-qa-MiniLM-L6-cos-v1" # model specifically trained to solve question-and-answer semantic search tasks
 COLLECTION_NAME = "app_reviews"
 
-# Setting up openai API key
+# Loading openAI API key
 with open("config.json", mode="r") as json_file:
     config_data = json.load(json_file)
 
 openai.api_key = config_data.get("openai-secret-key")
 
+# Initialize chromadb client
 client = chromadb.PersistentClient(CHROMA_PATH)
 
 embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
@@ -28,7 +31,7 @@ collection = client.get_collection(
      )
 
 
-# Setting up the context to the LLM
+# Defining the context and questions to the LLM
 context = """ 
 You are a customer success employee at a large
 audio streaming and media service provider company. 
@@ -73,7 +76,7 @@ bad_reviews = collection.query(
     query_texts=[question_bad_reviews],
     n_results=10,
     include=["documents"],
-    where={"Rating": {"$lte": 3}}, # filter for ratings less than 3
+    where={"$and": [{"Rating": {"$gte": 0}}, {"Rating":{"$lte": 3}}]}, # filter for ratings less than 3 (between 0 and 3)
 )
 
 bad_reviews_str = ",".join(bad_reviews["documents"][0])
