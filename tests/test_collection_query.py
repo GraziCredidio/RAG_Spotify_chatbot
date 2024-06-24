@@ -1,4 +1,3 @@
-
 import chromadb
 from chromadb.utils import embedding_functions
 from review_data_etl import prepare_reviews_data
