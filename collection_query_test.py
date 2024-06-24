@@ -12,8 +12,12 @@ COLLECTION_NAME = "app_reviews"
 
 # Running query
 client = chromadb.PersistentClient(CHROMA_PATH)
+
 embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=EMBEDDING_FUNC_NAME)
-collection = client.get_collection(name=COLLECTION_NAME, embedding_function=embedding_func)
+
+collection = client.get_collection(
+    name=COLLECTION_NAME, embedding_function=embedding_func
+    )
 
 # Good reviews
 great_reviews = collection.query(query_texts=["Find me some positive reviews that discuss the apps performance"],
