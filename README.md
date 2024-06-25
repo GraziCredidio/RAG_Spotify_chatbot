@@ -22,7 +22,9 @@ A vector database was used to store embedded reviews and retrieve similar docume
     ```
 3. Execute `collection_creation.py` to create collection of documents that will be later used as context to the LLM
 
-4. Run the RAG Spotify chatbot web application:
+4. Open the file `example.config.json` and enter your OpenAI secret key. Then, rename the file to `config.json`
+
+5. To run the RAG Spotify chatbot web application, open the terminal in the folder and type:
     ```bash
     streamlit run app.py
     ```
