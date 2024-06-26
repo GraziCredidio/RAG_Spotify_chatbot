@@ -7,6 +7,10 @@ To make LLM responses more tailored to the business (e.g.: Spotify), some review
 
 A vector database was used to store embedded reviews and retrieve similar documents as described in the query. The retrieved relevant documents and the query are passed to the LLM. A context-informed response is generated as a result.  
 
+<p align="center">
+  <img src="media/visuals.gif" width="750">
+</p>
+
 ## Technical stack 
 `polars` was used in the preprocessing of data and creation of documents. A collection in bacthes of 166 documents was created and sequentially embedded and stored in a `chromaDB` vector database. The embedding model used was the `multi-qa-MiniLM-L6-cos-v1`, and `gpt-3.5-turbo` was applied as the LLM. The final deliverable web application was created using `streamlit` (with the default port 8501).  
 
